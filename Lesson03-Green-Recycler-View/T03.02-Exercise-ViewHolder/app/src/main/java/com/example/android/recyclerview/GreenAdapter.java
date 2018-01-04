@@ -105,27 +105,23 @@ public class GreenAdapter extends RecyclerView.Adapter<GreenAdapter.NumberViewHo
         return mNumberItems;
     }
 
+
     // COMPLETED TODO (12) Create a class called NumberViewHolder that extends RecyclerView.ViewHolder
-
-    // COMPLETED TODO (13) Within NumberViewHolder, create a TextView variable called listItemNumberView
-
-    // COMPLETED TODO (14) Create a constructor for NumberViewHolder that accepts a View called itemView as a parameter
-    // COMPLETED TODO (15) Within the constructor, call super(itemView) and then find listItemNumberView by ID
-
-    // COMPLETED TODO (16) Within the NumberViewHolder class, create a void method called bind that accepts an int parameter called listIndex
-    // COMPLETED TODO (17) Within bind, set the text of listItemNumberView to the listIndex
-    // COMPLETED TODO (18) Be careful to get the String representation of listIndex, as using setText with an int does something different
-
     class NumberViewHolder extends RecyclerView.ViewHolder {
+
+        // COMPLETED TODO (13) Within NumberViewHolder, create a TextView variable called listItemNumberView
         TextView listItemNumberView;
 
+        // COMPLETED TODO (14) Create a constructor for NumberViewHolder that accepts a View called itemView as a parameter
         public NumberViewHolder(View itemView) {
+            // COMPLETED TODO (15) Within the constructor, call super(itemView) and then find listItemNumberView by ID
             super(itemView);
-
             listItemNumberView = itemView.findViewById(R.id.tv_item_number);
         }
-
+        // COMPLETED TODO (16) Within the NumberViewHolder class, create a void method called bind that accepts an int parameter called listIndex
         void bind(int listIndex) {
+            // COMPLETED TODO (17) Within bind, set the text of listItemNumberView to the listIndex
+            // COMPLETED TODO (18) Be careful to get the String representation of listIndex, as using setText with an int does something different
             listItemNumberView.setText(String.valueOf(listIndex));
         }
     }
