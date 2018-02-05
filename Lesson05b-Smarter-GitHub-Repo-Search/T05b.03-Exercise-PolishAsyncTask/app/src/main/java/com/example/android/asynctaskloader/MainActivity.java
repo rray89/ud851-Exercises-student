@@ -16,6 +16,7 @@
 package com.example.android.asynctaskloader;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
@@ -31,6 +32,7 @@ import android.widget.TextView;
 import com.example.android.asynctaskloader.utilities.NetworkUtils;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private TextView mErrorMessageDisplay;
 
-    private ProgressBar mLoadingIndicator;
+    private static ProgressBar mLoadingIndicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,55 +163,116 @@ public class MainActivity extends AppCompatActivity implements
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public Loader<String> onCreateLoader(int id, final Bundle args) {
-        return new AsyncTaskLoader<String>(this) {
+    //Self-created static class MyAsyncTaskLoader extends AsyncTaskLoader(String)
+    //Reference: https://stackoverflow.com/a/46166223/4603363
+    private static class MyAsyncTaskLoader extends AsyncTaskLoader<String> {
 
-            // TODO (1) Create a String member variable called mGithubJson that will store the raw JSON
+        private WeakReference<MainActivity> activityWeakReference;
+        private Bundle bundle;
+        String mGithubJson;
 
-            @Override
-            protected void onStartLoading() {
+        MyAsyncTaskLoader(MainActivity context, Bundle bundle) {
+            super(context);
+            activityWeakReference = new WeakReference<>(context);
+            this.bundle = bundle;
+        }
 
-                /* If no arguments were passed, we don't have a query to perform. Simply return. */
-                if (args == null) {
-                    return;
-                }
 
-                /*
-                 * When we initially begin loading in the background, we want to display the
-                 * loading indicator to the user
-                 */
-                mLoadingIndicator.setVisibility(View.VISIBLE);
-
-                // TODO (2) If mGithubJson is not null, deliver that result. Otherwise, force a load
+        @Override
+        public void onStartLoading() {
+            super.onStartLoading();
+            // COMPLETED  (6) If bundle is null, return.
+            if (bundle == null) {
+                return;
+            }
+            // COMPLETED  (7) Show the loading indicator
+            mLoadingIndicator.setVisibility(View.VISIBLE);
+            // COMPLETED  (8) Force a load
+            if (mGithubJson != null) {
+                deliverResult(mGithubJson);
+            } else {
                 forceLoad();
             }
+        }
 
-            @Override
-            public String loadInBackground() {
-
-                /* Extract the search query from the args using our constant */
-                String searchQueryUrlString = args.getString(SEARCH_QUERY_URL_EXTRA);
-
-                /* If the user didn't enter anything, there's nothing to search for */
-                if (searchQueryUrlString == null || TextUtils.isEmpty(searchQueryUrlString)) {
-                    return null;
-                }
-
-                /* Parse the URL from the passed in String and perform the search */
-                try {
-                    URL githubUrl = new URL(searchQueryUrlString);
-                    String githubSearchResults = NetworkUtils.getResponseFromHttpUrl(githubUrl);
-                    return githubSearchResults;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return null;
-                }
+        @Override
+        public String loadInBackground() {
+            String searchQueryUrlString = bundle.getString(SEARCH_QUERY_URL_EXTRA);
+            if (searchQueryUrlString == null || TextUtils.isEmpty(searchQueryUrlString)) {
+                return null;
             }
 
-            // TODO (3) Override deliverResult and store the data in mGithubJson
-            // TODO (4) Call super.deliverResult after storing the data
-        };
+            try {
+                URL githubUrl = new URL(searchQueryUrlString);
+                return NetworkUtils.getResponseFromHttpUrl(githubUrl);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+
+        @Override
+        public void deliverResult(@Nullable String data) {
+            mGithubJson = data;
+            super.deliverResult(data);
+        }
+    }
+
+
+    //Error message: this Loader should be static or leak may occur.
+    @Override
+    public Loader<String> onCreateLoader(int id, final Bundle args) {
+
+        return new MyAsyncTaskLoader(this, args);
+
+//        return new AsyncTaskLoader<String>(this) {
+//
+//            // COMPLETED TODO (1) Create a String member variable called mGithubJson that will store the raw JSON
+//
+//            @Override
+//            protected void onStartLoading() {
+//
+//                /* If no arguments were passed, we don't have a query to perform. Simply return. */
+//                if (args == null) {
+//                    return;
+//                }
+//
+//                /*
+//                 * When we initially begin loading in the background, we want to display the
+//                 * loading indicator to the user
+//                 */
+//                mLoadingIndicator.setVisibility(View.VISIBLE);
+//
+//                // COMPLETED TODO (2) If mGithubJson is not null, deliver that result. Otherwise, force a load
+//                forceLoad();
+//            }
+//
+//            @Override
+//            public String loadInBackground() {
+//
+//                /* Extract the search query from the args using our constant */
+//                String searchQueryUrlString = args.getString(SEARCH_QUERY_URL_EXTRA);
+//
+//                /* If the user didn't enter anything, there's nothing to search for */
+//                if (searchQueryUrlString == null || TextUtils.isEmpty(searchQueryUrlString)) {
+//                    return null;
+//                }
+//
+//                /* Parse the URL from the passed in String and perform the search */
+//                try {
+//                    URL githubUrl = new URL(searchQueryUrlString);
+//                    String githubSearchResults = NetworkUtils.getResponseFromHttpUrl(githubUrl);
+//                    return githubSearchResults;
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                    return null;
+//                }
+//            }
+//
+//            // COMPLETED TODO (3) Override deliverResult and store the data in mGithubJson
+//            // COMPLETED TODO (4) Call super.deliverResult after storing the data
+//        };
     }
 
     @Override

@@ -191,6 +191,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
         }
     }
+
     // COMPLETED TODO (3) Override onCreateLoader
     @Override
     public Loader<String> onCreateLoader(int id, final Bundle bundle) {
