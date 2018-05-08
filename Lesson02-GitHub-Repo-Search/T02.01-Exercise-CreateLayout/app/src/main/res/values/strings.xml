@@ -15,4 +15,7 @@
   -->
 <resources>
     <string name="app_name">Github Query</string>
+    <string name="search_query_box_hint">Enter a query to search</string>
+    <string name="pre_search_result_text">Search URL result will be displayed here once you click Search button</string>
+    <string name="search_text_hint">Search something!!!</string>
 </resources>
