@@ -36,22 +36,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mSearchBoxEditText = (EditText) findViewById(R.id.et_search_box);
+        mSearchBoxEditText = findViewById(R.id.et_search_box);
 
-        mUrlDisplayTextView = (TextView) findViewById(R.id.tv_url_display);
-        mSearchResultsTextView = (TextView) findViewById(R.id.tv_github_search_results_json);
+        mUrlDisplayTextView =  findViewById(R.id.tv_url_display);
+        mSearchResultsTextView = findViewById(R.id.tv_github_search_results_json);
     }
-
-    // Do 2 - 7 in menu.xml ///////////////////////////////////////////////////////////////////////
-    // COMPLETED TODO (2) Create a menu xml called 'main.xml' in the res->menu folder
-    // COMPLETED TODO (3) Add one menu item to your menu
-    // COMPLETED TODO (4) Give the menu item an id of @+id/action_search
-    // COMPLETED TODO (5) Set the orderInCategory to 1
-    // COMPLETED TODO (6) Show this item if there is room (use app:showAsAction, not android:showAsAction)
-    // COMPLETED TODO (7) Set the title to the search string ("Search") from strings.xml
-    // Do 2 - 7 in menu.xml ///////////////////////////////////////////////////////////////////////
-
-
 
 
     // COMPLETED TODO (8) Override onCreateOptionsMenu
